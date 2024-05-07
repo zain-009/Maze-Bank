@@ -3,6 +3,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import FunctionalButton from "../../components/Button/FunctionalButton/FunctionalButton";
 import axios from "axios";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -23,26 +24,129 @@ function Signup() {
   }, []);
 
   const handleSignUp = async () => {
-    try {
-      console.log(
-        name,
-        accountNumber,
-        cnic,
-        phoneNumber,
-        accountNumber,
-        age,
-        city
-      );
-      const res = await axios.post(`http://localhost:3000/signup`, {
-        name: name,
-        accountNumber: accountNumber,
-        cnic: cnic,
-        phoneNumber: phoneNumber,
-        age: age,
-        city: city,
+    if (!name || !accountNumber || !cnic || !phoneNumber || !age || !city) {
+      toast.error("Incomplete Details", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
       });
-    } catch (e) {
-      console.log(e);
+    } else if (!/^[a-zA-Z\s]*$/.test(name.trim())) {
+      toast.error("Invalid Name!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else if (cnic.length < 13 || !/^\d+$/.test(cnic)) {
+      toast.error("Invalid Cnic!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else if (phoneNumber.length < 11 || !/^\d+$/.test(phoneNumber)) {
+      toast.error("Invalid Phone Number!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else if (age < 18) {
+      toast.error("Under 18!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else if (!/^\d+$/.test(age)) {
+      toast.error("Invalid Age!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else if (!/^[a-zA-Z\s]*$/.test(city.trim())) {
+      toast.error("Invalid City!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else {
+      try {
+        const cnicExistsResponse = await axios.get(
+          `http://localhost:5000/api/check-cnic/${cnic}`
+        );
+        const cnicExists = cnicExistsResponse.data.exists;
+
+        if (cnicExists) {
+          toast.error("CNIC already registered!", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light",
+            transition: Bounce,
+          });
+          return;
+        }
+
+        const res = await axios.post(`http://localhost:5000/api/signup`, {
+          name: name,
+          accountNumber: parseInt(accountNumber, 10),
+          cnic: parseInt(cnic, 10),
+          phoneNumber: parseInt(phoneNumber, 10),
+          age: parseInt(age, 10),
+          city: city,
+        });
+        toast.success("Signup Successful!", {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        setTimeout(() => {
+          window.location.href = "/profile";
+        }, 2000);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -93,6 +197,7 @@ function Signup() {
             name=""
             id="cnic"
             value={cnic}
+            maxLength={13}
             className="py-3 px-10"
             placeholder="cnic"
             onChange={(e) => {
@@ -107,8 +212,9 @@ function Signup() {
           <input
             type="text"
             name=""
-            id="phone"
+            id="phoneNumber"
             value={phoneNumber}
+            maxLength={11}
             className="py-3 px-10"
             placeholder="phone"
             onChange={(e) => {
@@ -124,6 +230,7 @@ function Signup() {
             type="text"
             name=""
             id="age"
+            maxLength={2}
             value={age}
             className="py-3 px-10"
             placeholder="age"
@@ -160,6 +267,19 @@ function Signup() {
         </NavLink>
         <FunctionalButton label={"Signup"} onClick={handleSignUp} />
       </div>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 }
