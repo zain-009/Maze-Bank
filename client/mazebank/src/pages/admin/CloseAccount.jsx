@@ -1,46 +1,93 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import FunctionalButton from "../../components/Button/FunctionalButton/FunctionalButton";
 
 function CloseAccount() {
   const [delAccount, setDelAccount] = useState("");
 
-  const handleDeactivation = () => {
-    if (delAccount != "1") {
-      toast.error("Invalid Account Number", {
+  const handleDeactivation = async () => {
+    if (delAccount == "") {
+      toast.error("Enter an Account Number!", {
         position: "bottom-center",
-        autoClose: 2000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
-        theme: "dark",
+        theme: "light",
         transition: Bounce,
       });
     } else {
-      window.location.href = "/profile";
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/check-account-number/${delAccount}`
+        );
+        if (response.data.exists) {
+          setDelAccount("");
+          try {
+            const response = await axios.get(
+              `http://localhost:5000/api/deactivate/${delAccount}`
+            );
+            toast.success("Account Closed!", {
+              position: "bottom-center",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+              transition: Bounce,
+            });
+            setTimeout(() => {
+              window.location.href = "/profile";
+            }, 2000);
+          } catch (e) {
+            console.error("Error Deactivating Account", error);
+          }
+        } else {
+          toast.error("Account Does not Exist!", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light",
+            transition: Bounce,
+          });
+        }
+      } catch (error) {
+        console.error("Error checking account number existence:", error);
+      }
     }
   };
 
   return (
     <div className="mx-64 my-20 flex flex-col items-center gap-y-16">
       <span className="text-black font-poppins text-5xl font-medium">
-        Deactivate Account
+        Close Account
       </span>
-      <input
-        type="text"
-        name=""
-        id="accountNumber"
-        maxLength={9}
-        placeholder="Account Number"
-        value={delAccount}
-        className="py-3 px-10 bg-white"
-        onChange={(e) => {
-          setDelAccount(e.target.value);
-        }}
-      />
+      <div className="flex flex-col text-xl font-poppins">
+        <label className="text-black mb-1" htmlFor="cnic">
+          Account Number
+        </label>
+        <input
+          type="text"
+          name=""
+          id="accountNumber"
+          value={delAccount}
+          maxLength={8}
+          className="py-3 px-10"
+          placeholder="Account Number"
+          onChange={(e) => {
+            e.preventDefault(), setDelAccount(e.target.value);
+          }}
+        />
+      </div>
       <div className="flex gap-x-20">
         <NavLink to={"/profile"}>
           <button
@@ -50,11 +97,14 @@ function CloseAccount() {
             Cancel
           </button>
         </NavLink>
-        <FunctionalButton label={"Deactivate"} onClick={handleDeactivation} />
+        <FunctionalButton
+          label={"Close Account"}
+          onClick={handleDeactivation}
+        />
       </div>
       <ToastContainer
         position="bottom-center"
-        autoClose={3000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -62,7 +112,7 @@ function CloseAccount() {
         pauseOnFocusLoss
         draggable
         pauseOnHover={false}
-        theme="dark"
+        theme="light"
         transition={Bounce}
       />
     </div>

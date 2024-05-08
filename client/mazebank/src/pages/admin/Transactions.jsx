@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 function Transactions() {
   const [data, setData] = useState([{}]);
 
-  useEffect(() => {
-    fetch("http://localhost:5000/api")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setData(data);
-      });
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <div className="mx-64 my-20 flex flex-col items-center gap-y-16">

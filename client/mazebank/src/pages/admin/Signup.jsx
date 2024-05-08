@@ -25,12 +25,9 @@ function Signup() {
         const response = await axios.get(
           `http://localhost:5000/api/check-account-number/${result}`
         );
-
-        // If account number already exists, generate a new one
         if (response.data.exists) {
           generateUniqueAccountNumber();
         } else {
-          // If account number doesn't exist, set it in the state
           setAccountNumber(result);
         }
       } catch (error) {

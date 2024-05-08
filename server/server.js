@@ -15,6 +15,8 @@ const db = mysql.createConnection({
   port: 3306,
 });
 
+//Signup Customer
+
 app.post(`/api/signup`, (req, res) => {
   const { accountTitle, accountNumber, cnic, phoneNumber, city } = req.body;
   const customerQuery = `INSERT INTO customers (AccountNumber, AccountTitle, Cnic, Phone, City) VALUES (?, ?, ?, ?, ?)`;
@@ -55,9 +57,53 @@ app.post(`/api/signup`, (req, res) => {
   );
 });
 
+//Closing Account
+
+app.get(`/api/deactivate/:accountNumber`, (req, res) => {
+  const accountNumber = req.params.accountNumber;
+  console.log(accountNumber);
+  const removeFromCustomersQuery = `DELETE FROM customers WHERE AccountNumber = ?`;
+  const removeFromLoansQuery = `DELETE FROM loans WHERE AccountNumber = ?`;
+  const removeFromBalanceQuery = `DELETE FROM balance WHERE AccountNumber = ?`;
+  const removeFromTransactionsQuery = `DELETE FROM transactions WHERE AccountNumber = ?`;
+
+  db.query(removeFromLoansQuery, [accountNumber], (err, res1) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("Deleted User Record From Loans Table!");
+
+    db.query(removeFromBalanceQuery, [accountNumber], (err, res2) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log("Deleted User Records From Balance Table!");
+
+      db.query(removeFromTransactionsQuery, [accountNumber], (err, res3) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("Deleted User Transactions From Transactions Table!");
+        db.query(removeFromCustomersQuery, [accountNumber], (err, res4) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("Deleted User From Customers Table!");
+          res.status(200).send("Account Deactivation Successful");
+        });
+      });
+    });
+  });
+});
+
+//Checking Cnic Existense
+
 app.get("/api/check-cnic/:cnic", (req, res) => {
   const { cnic } = req.params;
-
   const checkCNICQuery =
     "SELECT COUNT(*) AS cnicCount FROM customers WHERE Cnic = ?";
   db.query(checkCNICQuery, [cnic], (err, result) => {
@@ -66,16 +112,17 @@ app.get("/api/check-cnic/:cnic", (req, res) => {
       res.status(500).json({ error: "Error checking CNIC" });
       return;
     }
-
     const cnicCount = result[0].cnicCount;
     res.json({ exists: cnicCount > 0 });
   });
 });
 
+//Checking Account Existense
+
 app.get("/api/check-account-number/:accountNumber", async (req, res) => {
   const accountNumber = req.params.accountNumber;
   const checkAccountQuery =
-    "SELECT COUNT(*) AS AccountCount FROM customers WHERE Cnic = ?";
+    "SELECT COUNT(*) AS AccountCount FROM customers WHERE AccountNumber = ?";
   db.query(checkAccountQuery, [accountNumber], (err, result) => {
     if (err) {
       console.error("Error checking AccountNumber:", err);
@@ -97,10 +144,6 @@ app.get("/api/check-account-number/:accountNumber", async (req, res) => {
 //     res.json(result);
 //   });
 // });
-
-app.get("/api", (req, res) => {
-  res.json({ users: ["one", "two", "three"] });
-});
 
 // Start the server
 app.listen(port, () => {
