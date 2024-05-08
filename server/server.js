@@ -135,15 +135,20 @@ app.get("/api/check-account-number/:accountNumber", async (req, res) => {
   });
 });
 
-// app.get("/api/data", (req, res) => {
-//   const sql = "SELECT * FROM your_table_name";
-//   db.query(sql, (err, result) => {
-//     if (err) {
-//       throw err;
-//     }
-//     res.json(result);
-//   });
-// });
+//Getting User Details
+
+app.get("/api/data/:accountNumber", (req, res) => {
+  const accountNumber = req.params.accountNumber;
+  const detailsQuery =
+    "SELECT customers.AccountNumber, customers.AccountTitle, customers.Cnic, customers.Phone, customers.City, loans.LoanAmount, balance.Balance FROM customers LEFT JOIN loans ON customers.AccountNumber = loans.AccountNumber LEFT JOIN balance ON customers.AccountNumber = balance.AccountNumber WHERE customers.AccountNumber = ?";
+  db.query(detailsQuery, [accountNumber], (err, result) => {
+    if (err) {
+      console.error("Error retrieving user details:", err);
+      return;
+    }
+    res.json(result);
+  });
+});
 
 // Start the server
 app.listen(port, () => {

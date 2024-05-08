@@ -160,7 +160,7 @@ function Signup() {
             name=""
             id="name"
             value={accountTitle}
-            className="py-3 px-10"
+            className="py-3 px-10 rounded-sm shadow-sm"
             placeholder="name"
             onChange={(e) => {
               e.preventDefault(), setName(e.target.value);
@@ -177,7 +177,7 @@ function Signup() {
             name=""
             id="accountNumber"
             value={accountNumber}
-            className="py-3 px-10 bg-white"
+            className="py-3 px-10 bg-fullwhite rounded-sm shadow-sm"
           />
         </div>
         <div className="flex flex-col">
@@ -190,7 +190,7 @@ function Signup() {
             id="cnic"
             value={cnic}
             maxLength={13}
-            className="py-3 px-10"
+            className="py-3 px-10 rounded-sm shadow-sm"
             placeholder="cnic"
             onChange={(e) => {
               e.preventDefault(), setCnic(e.target.value);
@@ -207,7 +207,7 @@ function Signup() {
             id="phoneNumber"
             value={phoneNumber}
             maxLength={11}
-            className="py-3 px-10"
+            className="py-3 px-10 rounded-sm shadow-sm"
             placeholder="phone"
             onChange={(e) => {
               e.preventDefault(), setPhoneNumber(e.target.value);
@@ -223,7 +223,7 @@ function Signup() {
             name=""
             id="city"
             value={city}
-            className="py-3 px-10"
+            className="py-3 px-10 rounded-sm shadow-sm"
             placeholder="city"
             onChange={(e) => {
               e.preventDefault(), setCity(e.target.value);

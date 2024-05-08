@@ -8,17 +8,22 @@ function Withdraw() {
       <span className="text-black font-poppins text-5xl font-medium">
         Withdraw
       </span>
-      <input
-        type="text"
-        name=""
-        id="accountNumber"
-        maxLength={9}
-        placeholder="Account Number"
-        className="py-3 px-10 bg-white"
-        onChange={(e) => {
-          setDelAccount(e.target.value);
-        }}
-      />
+      <div className="flex flex-col text-xl font-poppins">
+        <label className="text-black mb-1" htmlFor="accountNumber">
+          Account Number
+        </label>
+        <input
+          type="text"
+          name=""
+          id="accountNumber"
+          maxLength={8}
+          className="py-3 px-10 rounded-sm shadow-sm"
+          placeholder="Account Number"
+          onChange={(e) => {
+            e.preventDefault();
+          }}
+        />
+      </div>
       <div className="flex gap-x-20">
         <NavLink to={"/profile"}>
           <button

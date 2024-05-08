@@ -41,7 +41,7 @@ function Login() {
           name=""
           id="username"
           value={username}
-          className="py-3 px-10 text-lg"
+          className="py-3 px-10 text-lg rounded-sm shadow-sm"
           placeholder="username"
           onChange={(e) => {
             e.preventDefault(), setUsername(e.target.value);
@@ -52,7 +52,7 @@ function Login() {
           name=""
           id="password"
           value={password}
-          className="py-3 px-10 text-lg"
+          className="py-3 px-10 text-lg rounded-sm shadow-sm"
           placeholder="password"
           onChange={(e) => {
             e.preventDefault(), setPassword(e.target.value);

@@ -8,6 +8,7 @@ export default {
       darkred: "#d81417",
       black: "#243142",
       white: "#f5f5f5",
+      fullwhite: "#ffffff",
       grey: "#69777C",
       outer: "#3E4E50",
       smoke: "#F2F2F2",
