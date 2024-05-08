@@ -6,25 +6,43 @@ import axios from "axios";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 function Signup() {
-  const [name, setName] = useState("");
+  const [accountTitle, setName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [cnic, setCnic] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [age, setAge] = useState("");
   const [city, setCity] = useState("");
 
   useEffect(() => {
-    const chars = "0123456789";
-    let result = "";
-    for (let i = 0; i < 8; i++) {
-      const num = Math.floor(Math.random() * chars.length);
-      result += chars[num];
-    }
-    setAccountNumber(result);
+    const generateUniqueAccountNumber = async () => {
+      const chars = "0123456789";
+      let result = "";
+      for (let i = 0; i < 8; i++) {
+        const num = Math.floor(Math.random() * chars.length);
+        result += chars[num];
+      }
+
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/check-account-number/${result}`
+        );
+
+        // If account number already exists, generate a new one
+        if (response.data.exists) {
+          generateUniqueAccountNumber();
+        } else {
+          // If account number doesn't exist, set it in the state
+          setAccountNumber(result);
+        }
+      } catch (error) {
+        console.error("Error checking account number existence:", error);
+      }
+    };
+
+    generateUniqueAccountNumber();
   }, []);
 
   const handleSignUp = async () => {
-    if (!name || !accountNumber || !cnic || !phoneNumber || !age || !city) {
+    if (!accountTitle || !accountNumber || !cnic || !phoneNumber || !city) {
       toast.error("Incomplete Details", {
         position: "bottom-center",
         autoClose: 1000,
@@ -35,7 +53,7 @@ function Signup() {
         theme: "light",
         transition: Bounce,
       });
-    } else if (!/^[a-zA-Z\s]*$/.test(name.trim())) {
+    } else if (!/^[a-zA-Z\s]*$/.test(accountTitle.trim())) {
       toast.error("Invalid Name!", {
         position: "bottom-center",
         autoClose: 1000,
@@ -59,28 +77,6 @@ function Signup() {
       });
     } else if (phoneNumber.length < 11 || !/^\d+$/.test(phoneNumber)) {
       toast.error("Invalid Phone Number!", {
-        position: "bottom-center",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "light",
-        transition: Bounce,
-      });
-    } else if (age < 18) {
-      toast.error("Under 18!", {
-        position: "bottom-center",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "light",
-        transition: Bounce,
-      });
-    } else if (!/^\d+$/.test(age)) {
-      toast.error("Invalid Age!", {
         position: "bottom-center",
         autoClose: 1000,
         hideProgressBar: false,
@@ -123,11 +119,10 @@ function Signup() {
         }
 
         const res = await axios.post(`http://localhost:5000/api/signup`, {
-          name: name,
-          accountNumber: parseInt(accountNumber, 10),
-          cnic: parseInt(cnic, 10),
-          phoneNumber: parseInt(phoneNumber, 10),
-          age: parseInt(age, 10),
+          accountTitle: accountTitle,
+          accountNumber: accountNumber,
+          cnic: cnic,
+          phoneNumber: phoneNumber,
           city: city,
         });
         toast.success("Signup Successful!", {
@@ -167,7 +162,7 @@ function Signup() {
             type="text"
             name=""
             id="name"
-            value={name}
+            value={accountTitle}
             className="py-3 px-10"
             placeholder="name"
             onChange={(e) => {
@@ -219,23 +214,6 @@ function Signup() {
             placeholder="phone"
             onChange={(e) => {
               e.preventDefault(), setPhoneNumber(e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-black" htmlFor="age">
-            Age
-          </label>
-          <input
-            type="text"
-            name=""
-            id="age"
-            maxLength={2}
-            value={age}
-            className="py-3 px-10"
-            placeholder="age"
-            onChange={(e) => {
-              e.preventDefault(), setAge(e.target.value);
             }}
           />
         </div>

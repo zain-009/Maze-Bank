@@ -16,14 +16,14 @@ const db = mysql.createConnection({
 });
 
 app.post(`/api/signup`, (req, res) => {
-  const { name, accountNumber, cnic, phoneNumber, age, city } = req.body;
-  const customerQuery = `INSERT INTO customers (Name, AccountNumber, Cnic, PhoneNumber, Age, City) VALUES (?, ?, ?, ?, ?, ?)`;
+  const { accountTitle, accountNumber, cnic, phoneNumber, city } = req.body;
+  const customerQuery = `INSERT INTO customers (AccountNumber, AccountTitle, Cnic, Phone, City) VALUES (?, ?, ?, ?, ?)`;
   const loanQuery = `INSERT INTO loans (AccountNumber, LoanAmount) VALUES (?, ?)`;
   const balanceQuery = `INSERT INTO balance (AccountNumber, Balance) VALUES (?, ?)`;
 
   db.query(
     customerQuery,
-    [name, accountNumber, cnic, phoneNumber, age, city],
+    [accountNumber, accountTitle, cnic, phoneNumber, city],
     (err, customerResult) => {
       if (err) {
         console.error("Error inserting customer data:", err);
@@ -69,6 +69,22 @@ app.get("/api/check-cnic/:cnic", (req, res) => {
 
     const cnicCount = result[0].cnicCount;
     res.json({ exists: cnicCount > 0 });
+  });
+});
+
+app.get("/api/check-account-number/:accountNumber", async (req, res) => {
+  const accountNumber = req.params.accountNumber;
+  const checkAccountQuery =
+    "SELECT COUNT(*) AS AccountCount FROM customers WHERE Cnic = ?";
+  db.query(checkAccountQuery, [accountNumber], (err, result) => {
+    if (err) {
+      console.error("Error checking AccountNumber:", err);
+      res.status(500).json({ error: "Error checking AccountNumber" });
+      return;
+    }
+
+    const AccountCount = result[0].AccountCount;
+    res.json({ exists: AccountCount > 0 });
   });
 });
 
