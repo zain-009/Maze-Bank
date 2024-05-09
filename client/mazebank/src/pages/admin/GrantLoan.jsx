@@ -49,10 +49,13 @@ function GrantLoan() {
         );
         if (response.data.exists) {
           try {
-            const res = await axios.post(`http://localhost:5000/api/loan`, {
-              accountNumber: accountNumber,
-              loanAmount: loanAmount,
-            });
+            const res = await axios.post(
+              `http://localhost:5000/api/grantloan`,
+              {
+                accountNumber: accountNumber,
+                loanAmount: loanAmount,
+              }
+            );
             toast.success("Loan Granted!", {
               position: "bottom-center",
               autoClose: 1000,
