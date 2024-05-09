@@ -19,6 +19,8 @@ function Profile() {
         <NavButton label={"Transactions"} navigator={"/transactions"} />
         <NavButton label={"Deposit"} navigator={"/deposit"} />
         <NavButton label={"Withdraw"} navigator={"/withdraw"} />
+        <NavButton label={"Grant Loan"} navigator={"/grantloan"} />
+        <NavButton label={"Collect Loan"} navigator={"/collectloan"} />
       </div>
     </div>
   );

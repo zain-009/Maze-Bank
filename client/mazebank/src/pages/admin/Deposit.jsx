@@ -82,7 +82,7 @@ function Deposit() {
             }, 1000);
           } catch (e) {
             console.log(e);
-            toast.error("Error Getting Account Details!", {
+            toast.error("Error Depositing Cash!", {
               position: "bottom-center",
               autoClose: 1000,
               hideProgressBar: false,
@@ -157,7 +157,7 @@ function Deposit() {
         <NavLink to={"/profile"}>
           <button
             type="button"
-            className="bg-red outline-none text-white text-xl font-medium py-3 px-10 hover:bg-darkred font-poppins"
+            className="bg-red outline-none text-white text-xl font-medium py-3 px-10 hover:bg-darkred font-poppins rounded-md"
           >
             Cancel
           </button>

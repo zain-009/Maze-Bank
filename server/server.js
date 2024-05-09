@@ -15,6 +15,35 @@ const db = mysql.createConnection({
   port: 3306,
 });
 
+//Grant Loan
+
+app.post(`/api/loan`, (req, res) => {
+  const { accountNumber, loanAmount } = req.body;
+
+  const prevLoanQuery = `SELECT LoanAmount from loans WHERE AccountNumber = ?`;
+  const updatedLoanQuery = `UPDATE loans SET LoanAmount = ? WHERE AccountNumber = ?`;
+
+  db.query(prevLoanQuery, [accountNumber], (err, resLoan) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send({ error: "Error retrieving loan amount!" });
+      return;
+    }
+    console.log("Loan Amount Retrieved Successfully!");
+    let loan = parseInt(resLoan[0].LoanAmount);
+    loan += parseInt(loanAmount);
+    db.query(updatedLoanQuery, [loan, accountNumber], (err, resUpdated) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ error: "Error updating loan" });
+        return;
+      }
+      console.log("Loan Granted Successfully!");
+      res.status(200).send({ success: true });
+    });
+  });
+});
+
 //Withdraw Cash
 
 app.post(`/api/withdraw`, (req, res) => {

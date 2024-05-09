@@ -92,7 +92,7 @@ function CloseAccount() {
         <NavLink to={"/profile"}>
           <button
             type="button"
-            className="bg-red outline-none text-white text-xl font-medium py-3 px-10 hover:bg-darkred font-poppins"
+            className="bg-red outline-none text-white text-xl font-medium py-3 px-10 hover:bg-darkred font-poppins rounded-md"
           >
             Cancel
           </button>

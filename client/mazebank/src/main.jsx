@@ -19,6 +19,8 @@ import ViewDetails from "./pages/admin/ViewDetails";
 import Transactions from "./pages/admin/Transactions";
 import Deposit from "./pages/admin/Deposit";
 import Withdraw from "./pages/admin/Withdraw";
+import GrantLoan from "./pages/admin/GrantLoan";
+import CollectLoan from "./pages/admin/CollectLoan";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +35,8 @@ const router = createBrowserRouter(
       <Route path="transactions" element={<Transactions />} />
       <Route path="deposit" element={<Deposit />} />
       <Route path="withdraw" element={<Withdraw />} />
+      <Route path="grantloan" element={<GrantLoan />} />
+      <Route path="collectloan" element={<CollectLoan />} />
     </Route>
   )
 );
