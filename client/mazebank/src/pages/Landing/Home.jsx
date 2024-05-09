@@ -19,8 +19,8 @@ function Home() {
         <div className="flex justify-start">
           <Card
             number={"01"}
-            title={"Transfer Money"}
-            description={"Transfer money anywhere and anytime easily"}
+            title={"Secure Banking"}
+            description={"Keep your money safe and secure"}
             icon={"/assets/icons/wallet.png"}
           />
         </div>

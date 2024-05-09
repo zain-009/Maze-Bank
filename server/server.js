@@ -15,6 +15,60 @@ const db = mysql.createConnection({
   port: 3306,
 });
 
+//Withdraw Cash
+
+app.post(`/api/withdraw`, (req, res) => {
+  const { accountNumber, newBalance } = req.body;
+
+  const updatedBalanceQuery = `UPDATE balance SET Balance = ? WHERE AccountNumber = ?`;
+
+  db.query(
+    updatedBalanceQuery,
+    [newBalance, accountNumber],
+    (err, resBalance) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ error: "Error updating balance" });
+        return;
+      }
+      console.log("Balance Updated Successfully!");
+      res.status(200).send({ success: true });
+    }
+  );
+});
+
+//Deposit Cash
+
+app.post(`/api/deposit`, (req, res) => {
+  const { accountNumber, depositAmount } = req.body;
+
+  const prevBalanceQuery = `SELECT Balance from balance WHERE AccountNumber = ?`;
+  const updatedBalanceQuery = `UPDATE balance SET Balance = ? WHERE AccountNumber = ?`;
+  db.query(prevBalanceQuery, [accountNumber], (err, resBalance) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send({ error: "Error retrieving balance" });
+      return;
+    }
+    console.log("Balance Retrieved Successfully!");
+    let balance = parseInt(resBalance[0].Balance);
+    balance += parseInt(depositAmount);
+    db.query(
+      updatedBalanceQuery,
+      [balance.toString(), accountNumber],
+      (err, resUpdated) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send({ error: "Error updating balance" });
+          return;
+        }
+        console.log("Balance Updated Successfully!");
+        res.status(200).send({ success: true });
+      }
+    );
+  });
+});
+
 //Signup Customer
 
 app.post(`/api/signup`, (req, res) => {
@@ -147,6 +201,20 @@ app.get("/api/data/:accountNumber", (req, res) => {
       return;
     }
     res.json(result);
+  });
+});
+
+//Get User Balance
+
+app.get("/api/balance/:accountNumber", (req, res) => {
+  const accountNumber = req.params.accountNumber;
+  const prevBalanceQuery = `SELECT Balance from balance WHERE AccountNumber = ?`;
+  db.query(prevBalanceQuery, [accountNumber], (err, result) => {
+    if (err) {
+      console.error("Error retrieving user details:", err);
+      return;
+    }
+    res.json(result[0].Balance);
   });
 });
 
