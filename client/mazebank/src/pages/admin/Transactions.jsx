@@ -24,6 +24,17 @@ function Transactions() {
         theme: "light",
         transition: Bounce,
       });
+    } else if (accountNumber.length < 8 || !/^\d+$/.test(accountNumber)) {
+      toast.error("Invalid Account Number!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
     } else {
       try {
         const response = await axios.get(
