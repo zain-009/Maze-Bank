@@ -153,7 +153,7 @@ function CollectLoan() {
             Cancel
           </button>
         </NavLink>
-        <FunctionalButton label={"Deposit"} onClick={HandleCollectLoan} />
+        <FunctionalButton label={"Collect"} onClick={HandleCollectLoan} />
       </div>
       <ToastContainer
         position="bottom-center"

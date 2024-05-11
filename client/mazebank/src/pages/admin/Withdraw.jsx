@@ -6,7 +6,7 @@ import FunctionalButton from "../../components/Button/FunctionalButton/Functiona
 
 function Withdraw() {
   const [accountNumber, setAccountNumber] = useState("");
-  const [withdrwaAmount, setWithdrwAmount] = useState("");
+  const [withdrawAmount, setWithdrwAmount] = useState("");
 
   const HandleWithdraw = async () => {
     if (accountNumber == "") {
@@ -31,7 +31,7 @@ function Withdraw() {
         theme: "light",
         transition: Bounce,
       });
-    } else if (!/^\d+$/.test(withdrwaAmount)) {
+    } else if (!/^\d+$/.test(withdrawAmount)) {
       toast.error("Invalid Deposit Amount!", {
         position: "bottom-center",
         autoClose: 1000,
@@ -42,7 +42,7 @@ function Withdraw() {
         theme: "light",
         transition: Bounce,
       });
-    } else if (withdrwaAmount < 1000) {
+    } else if (withdrawAmount < 1000) {
       toast.error("Minimum Withdraw 1000!", {
         position: "bottom-center",
         autoClose: 1000,
@@ -64,14 +64,15 @@ function Withdraw() {
               `http://localhost:5000/api/balance/${accountNumber}`
             );
             const balance = parseInt(balanceResponse.data);
-            if (balance >= parseInt(withdrwaAmount)) {
+            if (balance >= parseInt(withdrawAmount)) {
               try {
-                const newbalance = balance - withdrwaAmount;
+                const newbalance = balance - withdrawAmount;
                 const res = await axios.post(
                   `http://localhost:5000/api/withdraw`,
                   {
                     accountNumber: accountNumber,
                     newBalance: newbalance,
+                    withdrawAmount: withdrawAmount,
                   }
                 );
                 toast.success("Cash Withdrawed!", {
@@ -168,7 +169,7 @@ function Withdraw() {
             type="text"
             name=""
             id="withdrwaAmount"
-            value={withdrwaAmount}
+            value={withdrawAmount}
             maxLength={7}
             className="py-3 px-10 rounded-sm shadow-sm"
             placeholder="Withdraw Amount"

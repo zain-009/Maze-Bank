@@ -13,6 +13,7 @@ export default {
       outer: "#3E4E50",
       smoke: "#F2F2F2",
       richblack: "#171D24",
+      lightred: "#DFA4A6",
     },
     fontFamily: {
       poppins: ["Poppins", "sans-serif"],

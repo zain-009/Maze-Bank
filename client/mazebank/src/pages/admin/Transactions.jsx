@@ -6,10 +6,10 @@ import FunctionalButton from "../../components/Button/FunctionalButton/Functiona
 
 function Transactions() {
   const [accountNumber, setAccountNumber] = useState("");
-  const [accountDetails, setAccountDetails] = useState(null);
+  const [transactions, setTransactions] = useState(null);
 
   useEffect(() => {
-    setAccountDetails(null);
+    setTransactions(null);
   }, [accountNumber]);
 
   const handleViewDetails = async () => {
@@ -31,11 +31,11 @@ function Transactions() {
         );
         if (response.data.exists) {
           try {
-            const response = axios
-              .get(`http://localhost:5000/api/data/${accountNumber}`)
-              .then((res) => {
-                setAccountDetails(res.data[0]);
-                console.log(accountDetails);
+            const transactionResponse = axios
+              .get(`http://localhost:5000/api/transactions/${accountNumber}`)
+              .then((response) => {
+                console.log(response.data);
+                setTransactions(response.data);
               })
               .catch((e) => {
                 console.log(e);
@@ -104,29 +104,39 @@ function Transactions() {
           }}
         />
       </div>
-      {accountDetails ? (
-        <>
-          <div className="flex justify-between p-10 bg-fullwhite rounded-md text-xl font-poppins text-black gap-x-20">
-            <div className="flex flex-col gap-y-6 font-bold">
-              <span>Account Title</span>
-              <span>Account Number</span>
-              <span>Cnic</span>
-              <span>Phone</span>
-              <span>City</span>
-              <span>Balance</span>
-              <span>Pending Loan</span>
+      {transactions ? (
+        <div className="w-full bg-fullwhite p-5 flex flex-col items-center text-xl font-poppins text-black font-medium">
+          {transactions.length === 0 ? (
+            <>
+              <span className="mb-1">Your don't have any transactions</span>
+            </>
+          ) : transactions.length === 1 ? (
+            <span className="mb-1">Here is your last transaction</span>
+          ) : (
+            <span className="mb-1">
+              Here are your last {transactions.length} transactions
+            </span>
+          )}
+          {transactions.map((transaction, index) => (
+            <div key={index} className="p-3 bg-lightred rounded-sm w-full my-1">
+              <div className="flex justify-between">
+                <p className="ms-2">{transaction.Purpose}</p>
+                <div>
+                  {transactions.Purpose}
+                  <div className="w-32 flex justify-start">
+                    {transaction.Purpose == "Cash Deposit" ||
+                    transaction.Purpose == "Loan Received" ? (
+                      <span>+</span>
+                    ) : (
+                      <span>-</span>
+                    )}
+                    <p>{transaction.TransactionAmount}Pkr</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-y-6 font-medium">
-              <span>{accountDetails.AccountTitle}</span>
-              <span>{accountDetails.AccountNumber}</span>
-              <span>{accountDetails.Cnic}</span>
-              <span>{accountDetails.Phone}</span>
-              <span>{accountDetails.City}</span>
-              <span>{accountDetails.Balance}Pkr</span>
-              <span>{accountDetails.LoanAmount}Pkr</span>
-            </div>
-          </div>
-        </>
+          ))}
+        </div>
       ) : (
         <></>
       )}

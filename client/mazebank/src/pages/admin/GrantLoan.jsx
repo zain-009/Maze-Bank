@@ -153,7 +153,7 @@ function GrantLoan() {
             Cancel
           </button>
         </NavLink>
-        <FunctionalButton label={"Deposit"} onClick={HandleGrantLoan} />
+        <FunctionalButton label={"Grant"} onClick={HandleGrantLoan} />
       </div>
       <ToastContainer
         position="bottom-center"

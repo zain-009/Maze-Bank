@@ -15,13 +15,15 @@ const db = mysql.createConnection({
   port: 3306,
 });
 
-//Grant Loan
+//Collect Loan
 
 app.post(`/api/collectloan`, (req, res) => {
   const { accountNumber, loanAmount } = req.body;
 
   const prevLoanQuery = `SELECT LoanAmount from loans WHERE AccountNumber = ?`;
   const updatedLoanQuery = `UPDATE loans SET LoanAmount = ? WHERE AccountNumber = ?`;
+  const transactionQuery = `INSERT INTO transactions (AccountNumber, TransactionAmount, Purpose) VALUES (?, ?, ?)`;
+  const purpose = `Loan Repaid`;
 
   db.query(prevLoanQuery, [accountNumber], (err, resLoan) => {
     if (err) {
@@ -39,7 +41,19 @@ app.post(`/api/collectloan`, (req, res) => {
         return;
       }
       console.log("Loan Collected Successfully!");
-      res.status(200).send({ success: true });
+      db.query(
+        transactionQuery,
+        [accountNumber, loanAmount, purpose],
+        (err, resTransaction) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send({ error: "Error inserting transaction" });
+            return;
+          }
+          console.log("Transaction Inserted Successfully!");
+          res.status(200).send({ success: true });
+        }
+      );
     });
   });
 });
@@ -51,6 +65,8 @@ app.post(`/api/grantloan`, (req, res) => {
 
   const prevLoanQuery = `SELECT LoanAmount from loans WHERE AccountNumber = ?`;
   const updatedLoanQuery = `UPDATE loans SET LoanAmount = ? WHERE AccountNumber = ?`;
+  const transactionQuery = `INSERT INTO transactions (AccountNumber, TransactionAmount, Purpose) VALUES (?, ?, ?)`;
+  const purpose = `Loan Received`;
 
   db.query(prevLoanQuery, [accountNumber], (err, resLoan) => {
     if (err) {
@@ -68,7 +84,19 @@ app.post(`/api/grantloan`, (req, res) => {
         return;
       }
       console.log("Loan Granted Successfully!");
-      res.status(200).send({ success: true });
+      db.query(
+        transactionQuery,
+        [accountNumber, loanAmount, purpose],
+        (err, resTransaction) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send({ error: "Error inserting transaction" });
+            return;
+          }
+          console.log("Transaction Inserted Successfully!");
+          res.status(200).send({ success: true });
+        }
+      );
     });
   });
 });
@@ -76,9 +104,12 @@ app.post(`/api/grantloan`, (req, res) => {
 //Withdraw Cash
 
 app.post(`/api/withdraw`, (req, res) => {
-  const { accountNumber, newBalance } = req.body;
+  const { accountNumber, newBalance, withdrawAmount } = req.body;
 
   const updatedBalanceQuery = `UPDATE balance SET Balance = ? WHERE AccountNumber = ?`;
+  const transactionQuery = `INSERT INTO transactions (AccountNumber, TransactionAmount, Purpose) VALUES (?, ?, ?)`;
+  const purpose = `Cash Withdrawal`;
+  console.log("withdraw amount:" + withdrawAmount);
 
   db.query(
     updatedBalanceQuery,
@@ -86,11 +117,23 @@ app.post(`/api/withdraw`, (req, res) => {
     (err, resBalance) => {
       if (err) {
         console.log(err);
-        res.status(500).send({ error: "Error updating balance" });
+        res.status(500).send({ error: "Error Withdrawing Cash" });
         return;
       }
-      console.log("Balance Updated Successfully!");
-      res.status(200).send({ success: true });
+      console.log("Cash Withdrawal Successfully!");
+      db.query(
+        transactionQuery,
+        [accountNumber, withdrawAmount, purpose],
+        (err, resTransaction) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send({ error: "Error inserting transaction" });
+            return;
+          }
+          console.log("Transaction Inserted Successfully!");
+          res.status(200).send({ success: true });
+        }
+      );
     }
   );
 });
@@ -102,6 +145,8 @@ app.post(`/api/deposit`, (req, res) => {
 
   const prevBalanceQuery = `SELECT Balance from balance WHERE AccountNumber = ?`;
   const updatedBalanceQuery = `UPDATE balance SET Balance = ? WHERE AccountNumber = ?`;
+  const transactionQuery = `INSERT INTO transactions (AccountNumber, TransactionAmount, Purpose) VALUES (?, ?, ?)`;
+  const purpose = `Cash Deposit`;
   db.query(prevBalanceQuery, [accountNumber], (err, resBalance) => {
     if (err) {
       console.log(err);
@@ -121,7 +166,19 @@ app.post(`/api/deposit`, (req, res) => {
           return;
         }
         console.log("Balance Updated Successfully!");
-        res.status(200).send({ success: true });
+        db.query(
+          transactionQuery,
+          [accountNumber, depositAmount, purpose],
+          (err, resTransaction) => {
+            if (err) {
+              console.log(err);
+              res.status(500).send({ error: "Error inserting transaction" });
+              return;
+            }
+            console.log("Transaction Inserted Successfully!");
+            res.status(200).send({ success: true });
+          }
+        );
       }
     );
   });
@@ -256,6 +313,21 @@ app.get("/api/data/:accountNumber", (req, res) => {
   db.query(detailsQuery, [accountNumber], (err, result) => {
     if (err) {
       console.error("Error retrieving user details:", err);
+      return;
+    }
+    res.json(result);
+  });
+});
+
+//Getting User Transactions
+
+app.get("/api/transactions/:accountNumber", (req, res) => {
+  const accountNumber = req.params.accountNumber;
+  const getTransactionsQuery =
+    "SELECT Purpose, TransactionAmount FROM transactions WHERE AccountNumber = ?";
+  db.query(getTransactionsQuery, [accountNumber], (err, result) => {
+    if (err) {
+      console.error("Error retrieving user transactions:", err);
       return;
     }
     res.json(result);
