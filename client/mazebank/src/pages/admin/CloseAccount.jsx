@@ -20,7 +20,7 @@ function CloseAccount() {
         theme: "light",
         transition: Bounce,
       });
-    } else if (accountNumber.length < 8 || !/^\d+$/.test(accountNumber)) {
+    } else if (delAccount.length < 8 || !/^\d+$/.test(delAccount)) {
       toast.error("Invalid Account Number!", {
         position: "bottom-center",
         autoClose: 1000,

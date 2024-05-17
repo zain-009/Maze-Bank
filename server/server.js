@@ -188,7 +188,7 @@ app.post(`/api/deposit`, (req, res) => {
 
 app.post(`/api/signup`, (req, res) => {
   const { accountTitle, accountNumber, cnic, phoneNumber, city } = req.body;
-  const customerQuery = `INSERT INTO customers (AccountNumber, AccountTitle, Cnic, Phone, City) VALUES (?, ?, ?, ?, ?)`;
+  const customerQuery = `INSERT INTO accounts (AccountNumber, AccountTitle, Cnic, Phone, City) VALUES (?, ?, ?, ?, ?)`;
   const loanQuery = `INSERT INTO loans (AccountNumber, LoanAmount) VALUES (?, ?)`;
   const balanceQuery = `INSERT INTO balance (AccountNumber, Balance) VALUES (?, ?)`;
 
@@ -231,7 +231,7 @@ app.post(`/api/signup`, (req, res) => {
 app.get(`/api/deactivate/:accountNumber`, (req, res) => {
   const accountNumber = req.params.accountNumber;
   console.log(accountNumber);
-  const removeFromCustomersQuery = `DELETE FROM customers WHERE AccountNumber = ?`;
+  const removeFromAccountsQuery = `DELETE FROM accounts WHERE AccountNumber = ?`;
   const removeFromLoansQuery = `DELETE FROM loans WHERE AccountNumber = ?`;
   const removeFromBalanceQuery = `DELETE FROM balance WHERE AccountNumber = ?`;
   const removeFromTransactionsQuery = `DELETE FROM transactions WHERE AccountNumber = ?`;
@@ -256,12 +256,12 @@ app.get(`/api/deactivate/:accountNumber`, (req, res) => {
           return;
         }
         console.log("Deleted User Transactions From Transactions Table!");
-        db.query(removeFromCustomersQuery, [accountNumber], (err, res4) => {
+        db.query(removeFromAccountsQuery, [accountNumber], (err, res4) => {
           if (err) {
             console.log(err);
             return;
           }
-          console.log("Deleted User From Customers Table!");
+          console.log("Deleted User From Accounts Table!");
           res.status(200).send("Account Deactivation Successful");
         });
       });
@@ -274,7 +274,7 @@ app.get(`/api/deactivate/:accountNumber`, (req, res) => {
 app.get("/api/check-cnic/:cnic", (req, res) => {
   const { cnic } = req.params;
   const checkCNICQuery =
-    "SELECT COUNT(*) AS cnicCount FROM customers WHERE Cnic = ?";
+    "SELECT COUNT(*) AS cnicCount FROM accounts WHERE Cnic = ?";
   db.query(checkCNICQuery, [cnic], (err, result) => {
     if (err) {
       console.error("Error checking CNIC:", err);
@@ -291,7 +291,7 @@ app.get("/api/check-cnic/:cnic", (req, res) => {
 app.get("/api/check-account-number/:accountNumber", async (req, res) => {
   const accountNumber = req.params.accountNumber;
   const checkAccountQuery =
-    "SELECT COUNT(*) AS AccountCount FROM customers WHERE AccountNumber = ?";
+    "SELECT COUNT(*) AS AccountCount FROM accounts WHERE AccountNumber = ?";
   db.query(checkAccountQuery, [accountNumber], (err, result) => {
     if (err) {
       console.error("Error checking AccountNumber:", err);
@@ -309,12 +309,13 @@ app.get("/api/check-account-number/:accountNumber", async (req, res) => {
 app.get("/api/data/:accountNumber", (req, res) => {
   const accountNumber = req.params.accountNumber;
   const detailsQuery =
-    "SELECT customers.AccountNumber, customers.AccountTitle, customers.Cnic, customers.Phone, customers.City, loans.LoanAmount, balance.Balance FROM customers LEFT JOIN loans ON customers.AccountNumber = loans.AccountNumber LEFT JOIN balance ON customers.AccountNumber = balance.AccountNumber WHERE customers.AccountNumber = ?";
+    "SELECT a.AccountNumber, a.AccountTitle, a.Cnic, a.Phone, a.City, l.LoanAmount, b.Balance FROM accounts as a INNER JOIN loans as l ON a.AccountNumber = l.AccountNumber INNER JOIN balance as b ON a.AccountNumber = b.AccountNumber WHERE a.AccountNumber = ?";
   db.query(detailsQuery, [accountNumber], (err, result) => {
     if (err) {
       console.error("Error retrieving user details:", err);
       return;
     }
+    console.log(result);
     res.json(result);
   });
 });

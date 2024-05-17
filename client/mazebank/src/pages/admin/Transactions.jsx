@@ -119,7 +119,9 @@ function Transactions() {
         <div className="w-full bg-fullwhite p-5 flex flex-col items-center text-xl font-poppins text-black font-medium">
           {transactions.length === 0 ? (
             <>
-              <span className="mb-1">Your don't have any transactions</span>
+              <span className="mb-1">
+                This Account doesn't have any transactions
+              </span>
             </>
           ) : transactions.length === 1 ? (
             <span className="mb-1">Here is your last transaction</span>

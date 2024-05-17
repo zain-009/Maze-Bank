@@ -11,7 +11,9 @@ function Profile() {
 
   return (
     <div className="mt-2">
-      <span className="mx-32 text-3xl font-poppins text-black">Dashboard</span>
+      <span className="mx-32 pt-44 text-4xl font-poppins text-black">
+        Dashboard
+      </span>
       <div className="grid grid-cols-2 grid-rows-4 mx-60 mt-16 mb-24 justify-items-center gap-y-10">
         <NavButton label={"Open Account"} navigator={"/signup"} />
         <NavButton label={"Close Account"} navigator={"/closeAccount"} />

@@ -145,11 +145,11 @@ function Signup() {
   return (
     <div className="mx-64 flex flex-col items-center mt-10 mb-20">
       <span className="text-black text-5xl font-medium mt-10 mb-16 font-poppins">
-        Signup
+        Open Account
       </span>
       <form
         action="#"
-        className="flex-col grid gap-y-8 gap-8 grid-cols-2 grid-rows-2 font-poppins text-lg"
+        className="flex-col grid gap-y-8 gap-8 grid-cols-2 grid-rows-2 font-poppins text-lg mb-1"
       >
         <div className="flex flex-col">
           <label className="text-black" htmlFor="name">
